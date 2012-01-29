@@ -1,0 +1,152 @@
+mofications for the wetab:
+
+WARNING:
+WARNING: this are Proof Of Concepts, not perfect sources !!!!!!!!!!!!!!!!!!
+WARNING:
+
+Kernel modules:
+
+  hid-multitouch: Because of the interaction between the screen firmware,
+  and the way that Android is expecting contact information, we need to send
+  information about both fingers to Android.
+  Also the firmware sometimes report pressure 0, when there is pressure.
+  I added a small "fix" for this.
+  NOTICE:
+TODO: on ics this might not be necessary, but its working
+
+  btusb and ath3k.
+  Our wetab is reporting different pci-ids when the bluetooth chip is
+  cold booted(no firmware) or warm booted (firmware already loaded)
+  the first needs to be handled by athk3, the second by btusb.
+  Needed to change both modules in the btusb and athk3 blacklists.
+  (Bluetooth in Android is not working yet, on cmd line it is !)
+TODO: check on ICS
+
+  asus-laptop.c
+  A version from kernel 3.2, with some fixes.
+  1. initialization of ALS (real error in original source)
+  2. small fix in reporting X,Y and Z values on multiple timeouts
+     (accelerometer)
+    
+  NEWER VERSION (jan 2012):
+  rewrite of getting accelerometer values. Using direct read of the 
+  Embedded Controller. This will give much better results then the ACPI calls.
+  Still have the problem that there is no locking between getting High and Low
+  bytes from the EC.
+  Implemented a (good?) bypass.
+
+  Field test gave however a very strange result.
+  The asus-laptop version is polling the EC, after 1 to 3 hours, this
+  resulted in: lowering screen brightness, stoping the fan and other problems.
+  I believe that the EC is overloaded (crashing or getting to warm).
+  Decided to not poll the Acellerometer anymore, but use
+  the "screen orientations change 0xEA" to only read the accelerometer.
+  when the screen rotation changes.
+  (same as wetabOS is doing)
+  So in Android we will not have accelerometer, but only orientation change
+  Implemented early suspend (see below)
+
+Kernel Command line
+  delete acpi_sleep (old and obsolete)
+  We also might want to use
+  i915.i915_enable_rc6=1 i915.i915_enable_fbc=1 i915.lvds_downclock=1 i915.modeset=1 ehci_force_handoff=1 pcie_aspm=force
+  as in wetab OS to get longer battery life 
+
+Android:
+
+ liblight:
+  Sample from google adapted for our brightness range (1-15, not 1-255)
+
+ libgps:
+  "Stolen" from a "advent vega" forum, and adapted to our wetab
+
+ libaccel:
+  "stolen" from ???
+  adapted for the wetab.
+  Accelerometer is working (including auto-rotate)
+  But the accelerometer is very noisy.
+  NB 1: Now using a modified kbdsensor (see asus-laptop above).
+  FIXED  NB 2: Not yet working in ICS.
+  Its working on ICS now, after I found out that ICS needs more values from
+  accelerometer, with correct timestamps, needed to fix kbdsensor for this.
+
+ libcamera:
+  stole a version again from de Vega forum,
+  adapted it to the wetab.
+  Is working in HoneyComb
+  For ICS: the HAL is changed a lot, but again found a source in VEGA forum.
+  Started to adapt this to wetab.
+  TODO  It is working a bit. WORK in PROGRES.
+
+ Audio for ICS: 
+  We can now use alsa for this, its working since about 20-01-2012
+  Also included is a libaudio that is using tinyalsa !!!
+  source onxe again from <ejtagle@tutopia.com>.
+  adapted for the wetab, (mixer values and names).
+  On the wetab mmap is not working in alsa, so I need to use "normal" pcm_write.
+  I do not know what is wrong with mmap.
+
+ 3G for ICS:
+  Started with: https://github.com/DerArtem/huaweigeneric-ril
+  needed to put some defines in, to make it compile on ICS
+  Needed to add "AT^RFSWITCH=1" during initialization to make the modem on.
+  (Seems not everyone needs one, but I do. The "AT+CFUN=1" should do the same,
+  but it is not working for me)
+  You also need to change class "late_start" to "main" in the rild in init.rc)
+  And ofcoarse pppd etc. is needed.
+  see also 
+  http://corvusmod.wordpress.com/2012/01/24/android-ics-4-0-3-for-wetab-english
+
+ Su:
+  special_su is the su that works with SuperUser Package (logging etc...)
+  I believe su needs its suid bit set (as in linux), but I do not know
+  how this should be implemeneted in a nice way
+
+ powerbtnd:
+  special version for wetab, see below.
+
+Better suspend/resume handling.
+
+boot command
+  delete ACPI_sleep, this is old and obsolete
+
+asus-laptop.ko
+  The accelerometer is creating a event device.
+  Because of the interaction between a linux device and the
+  android OS, this could lead to: "unable to suspend".
+  The linux device would create a wake_lock for the event, until it is
+  read by the Andorid OS.
+  But if the Android read-accelerometer proces is frozen during suspend
+  and the accelerometer is still feeding events, these wakelocks would
+  prevent the suspend.
+  SOLUTION: stop feeding accelermometer events in the early-suspend stage.
+
+Power button:
+  The Power button has a few problems.
+  First a press if sleeping, is NOT passed to the OS (as per ACPI-V3
+  specifications). This can be changed but requires a kernel modification.
+  Second the wetab Power button is unable to give us a "long" pressure.
+  Every press is a short one.
+  Third the EventHub.cpp will not listen for keys if the screen is not
+  on (for instance during resume). I believe this last one is a leftover patch
+  SOLUTIONS: extend the powerbtn deamon to emulate a long pressure if
+  two pressures within one second are detected.
+  extend the powerbtnd to send a POWER_KEY during resume
+  Fix EventHub.cpp (libinput.so)
+  ICS UPDATE:
+  No need for fixing EventHub anymore.
+
+  BUT there is another problem on ICS.
+  a resume will return to VT1, not the graphics console.
+  You can also not switch with CTRL-ALT-F7 to the graphics console.
+  So no solution yett for suspend/resume on ICS.
+
+Thanks to all those people who try to make his working, such as
+the peoples in the wetab forum. 
+ http://www.wetab-community.com/index.php?/forum/379-android-auf-dem-wetab/
+And all those people that left sources in different forums like
+ <ejtagle@tutopia.com>.
+And Corvus (http://corvusmod.wordpress.com/2012/01/24/android-ics-4-0-3-for-wetab-english/)
+Last but not least:
+ Chih-Wei, from the Android-x86 project at http://www.android-x86.org
+
