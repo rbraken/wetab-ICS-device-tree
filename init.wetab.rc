@@ -1,0 +1,25 @@
+on boot
+    chown system system /sys/class/backlight/acpi_video0/brightness
+
+    #setprop ro.kernel.gps.data "/dev/ttyUSB3"
+    #setprop ro.kernel.gps.ctl  "/dev/ttyUSB4"
+    #setprop ro.kernel.gps.supl "http://supl.google.com"
+
+
+#Launch init.sh
+
+#chmod 755 /system/etc/init.sh
+
+#service init_script /system/etc/init.sh
+#    oneshot
+#    disabled
+
+#on property:dev.bootcomplete=1
+#    start init_script
+
+service amixer /system/bin/alsa_amixer set Speaker 80
+    oneshot
+    disabled
+
+on property:dev.bootcomplete=1
+    start amixer

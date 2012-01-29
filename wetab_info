@@ -1,0 +1,38 @@
+DMIPATH=/sys/class/dmi/id
+
+wetab_info()
+{
+	board=`cat $DMIPATH/product_name`
+	case "$board" in
+		WeTab*)
+			;;
+		*)
+			error WARNING: An unknown model
+			;;
+	esac
+
+	# FIXME: a workaround for the race condition of auto-probing
+	EXTMOD="$EXTMOD hid-multitouch"
+	mkdir /android/mnt/USB
+	chown 1000.1015 /android/mnt/USB # system.sdcard_rw
+
+	return 1 # auto_detect
+}
+
+detect_hardware()
+{
+	case "`cat $DMIPATH/uevent`" in
+		*WeTab*)
+			;;
+		*)
+			error WARNING: An unknown tablet
+			;;
+	esac
+
+	wetab_info
+}
+
+post_detect()
+{
+	board=`cat $DMIPATH/product_name`
+}
