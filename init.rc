@@ -512,7 +512,7 @@ service dumpstate /system/bin/dumpstate -s
     disabled
     oneshot
 
-service powerbtnd /system/bin/powerbtnd
+service powerbtnd /system/bin/wetab_powerbtnd
     class main
 
 service faketsd /system/bin/faketsd
