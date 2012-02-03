@@ -1,0 +1,9 @@
+Until I find a way to patch the kernel from a device tree in a nice way,
+I will put modified source in this directory.
+Just copy them to the kernel tree.
+
+kernel/drivers/platform/x86/asus-laptop.c 
+kernel/drivers/bluetooth/ath3k.c
+kernel/drivers/bluetooth/btusb.c
+kernel/drivers/hid/hid-multitouch.c
+kernel/kernel/power/suspend.c

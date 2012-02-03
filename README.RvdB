@@ -46,6 +46,11 @@ TODO: check on ICS
   So in Android we will not have accelerometer, but only orientation change
   Implemented early suspend (see below)
 
+ suspend.c (3-2-2012)
+  modified with the help from Stefan Seidel <android@stefanseidel.info>
+  It will solve the problem that ICS resume would not show the graphic screen.
+  The reason for that was the missing VT allocation in android ICS.
+
 Kernel Command line
   delete acpi_sleep (old and obsolete)
   We also might want to use
@@ -140,6 +145,7 @@ Power button:
   a resume will return to VT1, not the graphics console.
   You can also not switch with CTRL-ALT-F7 to the graphics console.
   So no solution yett for suspend/resume on ICS.
+  3-2-2012 see above suspend.c.
 
 Thanks to all those people who try to make his working, such as
 the peoples in the wetab forum. 
