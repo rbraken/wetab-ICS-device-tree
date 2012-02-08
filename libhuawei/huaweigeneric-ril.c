@@ -1198,6 +1198,7 @@ static void requestSignalStrength(void *data, size_t datalen, RIL_Token t)
 	ATResponse *p_response = NULL;
 	int err;
 	int response[2];
+	RIL_SignalStrength_v6 response_v6;
 	char *line;
 
 	if(signalStrength[0] == 0 && signalStrength[1] == 0) {
@@ -1219,12 +1220,8 @@ static void requestSignalStrength(void *data, size_t datalen, RIL_Token t)
 		err = at_tok_nextint(&line, &(response[0]));
 		if (err < 0) goto error;
 
-		err = at_tok_nextint(&line, &(response[1]));
-		if (err < 0) goto error;
-		if(!isgsm) {
-//			response[0]=(response[0]*31)/5;
-//			response[1]=99;
-		}
+                response[1] = 99 ;
+
 		signalStrength[0] = response[0];
 		signalStrength[1] = response[1];
 		at_response_free(p_response);
@@ -1239,7 +1236,20 @@ static void requestSignalStrength(void *data, size_t datalen, RIL_Token t)
 	response[1] = signalStrength[1];
 
 	LOGI("SignalStrength %d %d",response[0],response[1]);
-	RIL_onRequestComplete(t, RIL_E_SUCCESS, response, sizeof(response));
+        response_v6.GW_SignalStrength.signalStrength = response[0];
+        response_v6.GW_SignalStrength.bitErrorRate = response[1];
+        response_v6.CDMA_SignalStrength.dbm = 0;
+        response_v6.CDMA_SignalStrength.ecio = 0;
+        response_v6.EVDO_SignalStrength.dbm = 0;
+        response_v6.EVDO_SignalStrength.ecio = 0;
+        response_v6.EVDO_SignalStrength.signalNoiseRatio = 0;
+        response_v6.LTE_SignalStrength.signalStrength = 0;
+        response_v6.LTE_SignalStrength.rsrp = 0;
+        response_v6.LTE_SignalStrength.rsrq = 0;
+        response_v6.LTE_SignalStrength.rssnr = 0;
+        response_v6.LTE_SignalStrength.cqi = 0; 
+
+	RIL_onRequestComplete(t, RIL_E_SUCCESS, &response_v6, sizeof(RIL_SignalStrength_v6)); 
 	return;
 
 error:
@@ -2333,6 +2343,8 @@ static void unsolicitedRSSI(const char * s)
 {
 	int err;
 	int response[2];
+	int signal[2];
+	RIL_SignalStrength_v6 response_v6;
 	char * line = NULL;
 
 	line = strdup(s);
@@ -2346,8 +2358,20 @@ static void unsolicitedRSSI(const char * s)
 	signalStrength[0]=response[0];
 	signalStrength[1]=99;
 	LOGI("Signal Strength %d",response[0]);
+        response_v6.GW_SignalStrength.signalStrength = response[0];
+        response_v6.GW_SignalStrength.bitErrorRate = 99;
+        response_v6.CDMA_SignalStrength.dbm = 0;
+        response_v6.CDMA_SignalStrength.ecio = 0;
+        response_v6.EVDO_SignalStrength.dbm = 0;
+        response_v6.EVDO_SignalStrength.ecio = 0;
+        response_v6.EVDO_SignalStrength.signalNoiseRatio = 0;
+        response_v6.LTE_SignalStrength.signalStrength = 0;
+        response_v6.LTE_SignalStrength.rsrp = 0;
+        response_v6.LTE_SignalStrength.rsrq = 0;
+        response_v6.LTE_SignalStrength.rssnr = 0;
+        response_v6.LTE_SignalStrength.cqi = 0; 
 
-	RIL_onUnsolicitedResponse(RIL_UNSOL_SIGNAL_STRENGTH, response, sizeof(response));
+	RIL_onUnsolicitedResponse(RIL_UNSOL_SIGNAL_STRENGTH, &response_v6, sizeof(RIL_SignalStrength_v6));
 	return;
 
 error:
