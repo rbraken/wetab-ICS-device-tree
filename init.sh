@@ -14,5 +14,13 @@ alsa_amixer set 'Mic Boost' 2
 alsa_amixer set 'Capture' 25
 alsa_amixer set 'Capture' cap
 
+# import cmdline variables
+for c in `cat /proc/cmdline`; do
+        case $c in
+                *=*)
+                        eval $c
+                        ;;
+        esac
+done
 
-
+[ -z "$SDCARD" -o "$SDCARD" = "internal" ] && start sdcard

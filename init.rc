@@ -35,6 +35,7 @@ loglevel 3
 # create mountpoints
     mkdir /mnt 0775 root system
     mkdir /mnt/sdcard 0000 system system
+    mkdir /mnt/USB 0000 system system
 
 # Create cgroup mount point for cpu accounting
     mkdir /acct
@@ -179,6 +180,10 @@ on post-fs-data
 
     # create directory for DRM plug-ins
     mkdir /data/drm 0774 drm drm
+
+    # we will remap this as /mnt/sdcard with the sdcard fuse tool
+    mkdir /data/media 0775 media_rw media_rw
+    chown media_rw media_rw /data/media
 
     # If there is no fs-post-data action in the init.<device>.rc file, you
     # must uncomment this line, otherwise encrypted filesystems
@@ -531,6 +536,10 @@ service ppp /system/bin/pppd call gprs
 
 service userinit /system/bin/sh /system/etc/init.sh
     oneshot
+    disabled
+
+service sdcard /system/bin/sdcard /data/media 1023 1023
+    class late_start
     disabled
 
 service logcat /system/bin/logcat -v time -f /data/log.txt

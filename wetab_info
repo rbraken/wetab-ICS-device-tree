@@ -12,9 +12,7 @@ wetab_info()
 	esac
 
 	# FIXME: a workaround for the race condition of auto-probing
-	EXTMOD="$EXTMOD hid-multitouch"
-	mkdir /android/mnt/USB
-	chown 1000.1015 /android/mnt/USB # system.sdcard_rw
+	EXTMOD="$EXTMOD ath3k uvcvideo hid-multitouch"
 
 	return 1 # auto_detect
 }
