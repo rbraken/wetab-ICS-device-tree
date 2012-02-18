@@ -1,0 +1,41 @@
+18-02-2012
+
+Porting the crystalhd to the wetab:18-02-2012
+
+First the kernel driver is needed.
+Started with this git :  http://linuxtv.org/git/jarod/crystalhd.git
+
+The kernel driver is not a big problem, just copy the directory kernel_mods/crystalhd to the kernel tree drivers/staging/crystalhd and enable the module
+in the kernel config.
+
+The module should load automaticly, but we need to chmod the device (/dev/crystalhd)  to 0644.
+
+Next we need libcrystalhd, the userspace library.
+This is slighty more interesting.
+This library is using posix Shared Memory, and Android doesn't use that.
+(If applications are not nice, they can kill youre system, especially since
+android might kill any application and then SHM is not freed.
+This application wil resuse its shared memory, so I do not believe this
+is a problem).
+All shm is handled by the kernel, not from userspace.
+So we need a kernel with SHM enabled.
+
+Next step is to interface between a user programm and the kernel, normally
+the C library will do that. But not the bionic libc used by android.
+In 2008 it was enabled but only for arm. For x86 it was never enabled.
+
+There is however a syscall interface in this libc, so we "only" need
+to create some functions (like shmget) call the correct syscall
+(IPC-117) and create our own shm.h.
+N.B. the one I created will only work on recent kernels on 32 bit x86.
+
+I also create a small posix_memalign, because android doesn't have that one.
+
+All in all this libcrystalhd will compile, and is working on my system
+(tested with a ffmpeg and libffmpeg, It did about 60fps on a H264 decode,
+decode only no display at this time)
+
+TODO: libffmpeg with support for crystalhd : almost done, working in test.
+TODO: a video displayer, mayby dolphin-playerx86: currently in test, but
+problems with displaying (too slow), might have something todo with the i915.)
+

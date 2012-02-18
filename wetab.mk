@@ -16,6 +16,7 @@ PRODUCT_COPY_FILES := \
     $(LOCAL_PATH)/vold.fstab:system/etc/vold.fstab \
     device/common/firmware/ath3k-1.fw:system/lib/firmware/ath3k-2.fw \
     $(LOCAL_PATH)/gps.conf:system/etc/gps.conf \
+    $(LOCAL_PATH)/crystalhd/firmware/fwbin/70015/bcm70015fw.bin:system/lib/firmware
 
 $(call inherit-product,$(SRC_TARGET_DIR)/product/generic_x86.mk)
 

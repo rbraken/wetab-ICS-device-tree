@@ -24,3 +24,5 @@ for c in `cat /proc/cmdline`; do
 done
 
 [ -z "$SDCARD" -o "$SDCARD" = "internal" ] && start sdcard
+# for hardware acceleration of video
+/system/bin/chmod 0666 /dev/crystalhd
