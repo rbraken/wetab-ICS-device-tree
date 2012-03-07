@@ -1,4 +1,4 @@
-obj-$(CONFIG_CRYSTALHD)	+= crystalhd.o
+obj-m += crystalhd.o
 
 crystalhd-y :=	crystalhd_lnx.o \
 	crystalhd_misc.o \
