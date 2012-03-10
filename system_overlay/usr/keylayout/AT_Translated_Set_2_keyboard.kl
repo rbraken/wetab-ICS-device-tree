@@ -1,0 +1,14 @@
+# Copyright (C) 2012 The Android-x86 Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+
+key 1     HOME          WAKE_DROPPED
+key 114   VOLUME_DOWN
+key 115   VOLUME_UP
+key 125   APP_SWITCH
+key 127   ESCAPE        WAKE_DROPPED

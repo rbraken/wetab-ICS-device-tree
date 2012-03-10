@@ -1,9 +1,28 @@
-mofications for the wetab:
+modifications for the wetab:
 
 WARNING:
 WARNING: this are Proof Of Concepts, not perfect sources !!!!!!!!!!!!!!!!!!
 WARNING:
 
+10-03-2012:
+Implementation of a way to overlay the system directory with a tree in
+the device directory.
+Will replaye some PRODUCT_COPY_FILES lines in wetab.mk.
+This will be used for firmwares, vold.fstab etc.
+N.B. system/user_app overlay can be used for user applications.
+     (not fully implemented yet)
+Also some cleanup of product package building in wetab.mk
+
+8-03-2012:
+Kernel modules are now in wetab tree, and will be compiled during normal make
+hid-multitouch: still needed for real dual-touch
+asus-laptop:    needed for autorotate
+ath3k and btusb: needed for correct loading of firmware
+wakeup_button:  needed for correct resume.
+
+
+
+************** below this line is old info, but some is still valid
 Kernel modules:
 
   hid-multitouch: Because of the interaction between the screen firmware,

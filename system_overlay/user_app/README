@@ -1,0 +1,3 @@
+In this directory use applications can be stored.
+The apk extention should be removed
+The will be installed during boot (not implemented yet)
