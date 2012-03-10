@@ -40,7 +40,7 @@
              android:removable="false"
              android:emulated="true"
              android:mtpReserve="100"/>
-    <storage android:mountPoint="/mnt/MicroSD"
+    <storage android:mountPoint="/mnt/sdcard_ext"
              android:storageDescription="@string/storage_sd_card"
              android:primary="false"
              android:removable="true" />

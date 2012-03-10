@@ -1,2 +1,12 @@
-# system.prop for wetab
-# ro.sf.lcd_density=160
+# system.prop for tegav2
+ro.sf.lcd_density=160
+
+#Fix for white screen and red border
+persist.sys.ui.hw=1
+mobiledata.interfaces=ppp0
+persist.sys.strictmode.visual=0
+persist.sys.strictmode.disable=1
+#debug.logcat=1
+
+#FIX resume to console problem
+#system_init.startsurfaceflinger=0 

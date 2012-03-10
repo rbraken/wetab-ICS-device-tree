@@ -4,7 +4,7 @@ wetab_info()
 {
 	board=`cat $DMIPATH/product_name`
 	case "$board" in
-		WeTab*)
+		TEGA*|Intel*|WeTab*|VPAD10*|X1*|PC*)
 			;;
 		*)
 			error WARNING: An unknown model
@@ -12,7 +12,7 @@ wetab_info()
 	esac
 
 	# FIXME: a workaround for the race condition of auto-probing
-	EXTMOD="$EXTMOD ath3k uvcvideo hid-multitouch"
+	EXTMOD="$EXTMOD ath3k uvcvideo hid-multitouch wakeup_button"
 
 	return 1 # auto_detect
 }
@@ -20,7 +20,7 @@ wetab_info()
 detect_hardware()
 {
 	case "`cat $DMIPATH/uevent`" in
-		*WeTab*)
+		*TEGA*|*Intel*|*WeTab*|*VPAD10*|*azpen*|*AZPENPC*)
 			;;
 		*)
 			error WARNING: An unknown tablet
@@ -33,4 +33,11 @@ detect_hardware()
 post_detect()
 {
 	board=`cat $DMIPATH/product_name`
+	case "$board" in
+		X1*|PC*)
+			echo 3 03eb 201c 1 > /sys/module/hid_multitouch/drivers/hid:hid-multitouch/new_id
+			;;
+		*)
+			;;
+	esac
 }

@@ -5,6 +5,23 @@ WARNING: this are Proof Of Concepts, not perfect sources !!!!!!!!!!!!!!!!!!
 WARNING:
 
 10-03-2012:
+Finalize the latest changes from android-x86 and Corvusmod.
+Status is now android-x86 3-2012 + Corvusmod update4 + betere resume.
+Only 2 patches on original tree needed (kernel make and pppd)
+
+10-03-2012:
+Remove sending powerkey on resume from special_powerbtn to
+a kernel module (thanks to StefanS)
+After enabeling vt switching in android-x86,
+the button we send from powerbtn, is to soon, and will be
+filtered by eventhub.cpp.
+The solution from StefanS is much beter.
+Also some cleanup int the init.rc's
+
+10-03-2012:
+Move system apk additions to our device tree (instead of /device/common
+
+10-03-2012:
 Implementation of a way to overlay the system directory with a tree in
 the device directory.
 Will replaye some PRODUCT_COPY_FILES lines in wetab.mk.

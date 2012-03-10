@@ -35,7 +35,9 @@ loglevel 3
 # create mountpoints
     mkdir /mnt 0775 root system
     mkdir /mnt/sdcard 0000 system system
-    mkdir /mnt/USB 0000 system system
+    mkdir /mnt/USB 0775 system system
+    mkdir /mnt/sdcard_ext 0775 system system
+
 
 # Create cgroup mount point for cpu accounting
     mkdir /acct
@@ -273,6 +275,8 @@ on boot
 
     setprop ro.radio.use-ppp yes
     setprop ro.radio.noril no
+    setprop picasso.3g true
+    setprop ro.pad.features.modem true
     setprop status.battery.state Slow
     setprop status.battery.level 5
     setprop status.battery.level_raw  50
@@ -294,7 +298,7 @@ on boot
     setprop rild.libargs "-d /dev/ttyUSB2"
 
 # Set this property so surfaceflinger is not started by system_init
-    setprop system_init.startsurfaceflinger 0
+#    setprop system_init.startsurfaceflinger 0
 
     class_start core
     class_start main
@@ -412,6 +416,7 @@ service servicemanager /system/bin/servicemanager
     critical
     onrestart restart zygote
     onrestart restart media
+    onrestart restart surfaceflinger
 
 service vold /system/bin/vold
     class core
@@ -426,7 +431,7 @@ service netd /system/bin/netd
 service debuggerd /system/bin/debuggerd
     class main
 
-service ril-daemon /system/bin/rild -l /system/lib/libhuaweigeneric-ril.so -- -d /dev/ttyUSB2
+service ril-daemon /system/bin/rild 
     class main
     socket rild stream 660 root radio
     socket rild-debug stream 660 radio system
@@ -438,6 +443,7 @@ service surfaceflinger /system/bin/surfaceflinger
     user system
     group graphics
     onrestart restart zygote
+    disabled
 
 service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
     class main
@@ -517,7 +523,8 @@ service dumpstate /system/bin/dumpstate -s
     disabled
     oneshot
 
-service powerbtnd /system/bin/wetab_powerbtnd
+#New Button Handler
+service powerbtnd /system/bin/powerbtnd
     class main
 
 service faketsd /system/bin/faketsd
@@ -527,7 +534,7 @@ service faketsd /system/bin/faketsd
     disabled
     oneshot
 
-service ppp /system/bin/pppd call gprs
+service pppd_gprs /system/etc/ppp/init.gprs-pppd
     class main
     user root
     group system radio
@@ -546,15 +553,18 @@ service logcat /system/bin/logcat -v time -f /data/log.txt
     disabled
     oneshot
 
-on property:dev.bootcomplete=1
-    start userinit
+on property:system_init.startsurfaceflinger=0
+    start surfaceflinger
     stop console
 
+on property:dev.bootcomplete=1
+    start userinit
+
 on property:gsm.sim.state=READY
-    start ppp
+    start pppd_gprs
 
 on property:gsm.sim.state=UNKNOWN
-    stop ppp
+    stop pppd_gprs
 
 on property:debug.logcat=1
     start logcat

@@ -5,8 +5,6 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
-LOCAL_MODULE_TAGS := optional
-
 LOCAL_SRC_FILES:= \
     huaweigeneric-ril.c \
     atchannel.c \
@@ -14,30 +12,24 @@ LOCAL_SRC_FILES:= \
     at_tok.c \
     sms.c \
     sms_gsm.c \
-    gsm.c
+    gsm.c \
+	requestdatahandler.c \
+	fcp_parser.c \
+	audiochannel.cpp 
+	
 
 LOCAL_SHARED_LIBRARIES := \
-	libcutils libutils libril
+	libcutils libutils libril libmedia
 
-	# for asprinf
+# for asprinf
 LOCAL_CFLAGS := -D_GNU_SOURCE
 
-LOCAL_C_INCLUDES := $(KERNEL_HEADERS)
+LOCAL_C_INCLUDES := $(KERNEL_HEADERS) $(TOP)/hardware/ril/libril/
 
-ifeq ($(TARGET_PRODUCT),sooner)
-  LOCAL_CFLAGS += -DOMAP_CSMI_POWER_CONTROL -DUSE_TI_COMMANDS 
-endif
-
-ifeq ($(TARGET_PRODUCT),surf)
-  LOCAL_CFLAGS += -DPOLL_CALL_STATE -DUSE_QMI
-endif
-
-ifeq ($(TARGET_PRODUCT),dream)
-  LOCAL_CFLAGS += -DPOLL_CALL_STATE -DUSE_QMI
-endif
+LOCAL_MODULE_TAGS := optional
 
 ifeq (foo,foo)
-# build shared library
+  #build shared library
   LOCAL_SHARED_LIBRARIES += \
 	libcutils libutils
   LOCAL_LDLIBS += -lpthread
@@ -51,4 +43,4 @@ else
 	libril
   LOCAL_MODULE:= huaweigeneric-ril
   include $(BUILD_EXECUTABLE)
-endif
+endif 

@@ -1,0 +1,37 @@
+
+The modules has still a few problems:
+
+* required modify init.rc add: 
+	on device-added-/dev/ttyUSB0
+	chmod 0777 /dev/ttyUSB0
+	on device-added-/dev/ttyUSB1
+	chmod 0777 /dev/ttyUSB1
+	on device-added-/dev/ttyUSB2
+	chmod 0777 /dev/ttyUSB2
+	on device-added-/dev/ttyUSB3
+	chmod 0777 /dev/ttyUSB3
+	on device-added-/dev/ttyUSB4
+	chmod 0777 /dev/ttyUSB4
+	on device-added-/dev/ttyUSB5
+	chmod 0777 /dev/ttyUSB5
+
+
+	on boot
+	service ril-daemon /system/bin/rild
+	socket rild stream 660 root radio
+	socket rild-debug stream 660 radio system
+	user root
+	group radio cache inet misc audio
+	
+
+* Edit system/build.prop ,add:
+	# for 3g
+	rild.libpath=/system/lib/libhuaweigeneric-ril.so
+	rild.libargs=-d /dev/ttyUSB2 -v /dev/ttyUSB1
+	keyguard.no_require_sim=1
+
+	
+---- 
+
+	pppd must be suid ROOT, and kernel must include ppp support compiled in
+	
